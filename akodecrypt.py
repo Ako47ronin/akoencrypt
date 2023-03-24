@@ -57,23 +57,29 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24*1024):
                 outfile.write(cipher.decrypt(chunk))
 
 # Define the recursive decryption function
-def decrypt_directory(key, path, extension):
+def decrypt_directory(key, path):
     for root, dirs, files in os.walk(path):
         for file in files:
             in_filename = os.path.join(root, file)
-            if in_filename.endswith(extension):
+            if in_filename.endswith('.enc'):
                 decrypt_file(key, in_filename)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Decrypt files in a directory recursively.')
     parser.add_argument('path', metavar='PATH', type=str, help='the path to the directory')
     parser.add_argument('key', metavar='KEY', type=str, help='the decryption key')
-    parser.add_argument('-e', '--extension', metavar='EXT', type=str, default='.enc', help='the file extension to decrypt (default: .enc)')
     args = parser.parse_args()
 
     path = args.path
     key = args.key.encode('utf-8')
-    extension = args.extension
 
     print(banner)
-    decrypt_directory(key, path, extension)
+    
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            in_filename = os.path.join(root, file)
+            if in_filename.endswith('.enc'):
+                decrypt_file(key, in_filename)
+
+
+
